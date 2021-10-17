@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Type__c</fullName>
+    <externalId>false</externalId>
+    <label>Type</label>
+    <required>true</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Awards and Competitions</fullName>
+                <default>false</default>
+                <label>Awards and Competitions</label>
+            </value>
+            <value>
+                <fullName>Conference</fullName>
+                <default>false</default>
+                <label>Conference</label>
+            </value>
+            <value>
+                <fullName>Event Sponsorships</fullName>
+                <default>false</default>
+                <label>Event Sponsorships</label>
+            </value>
+            <value>
+                <fullName>Festivals</fullName>
+                <default>false</default>
+                <label>Festivals</label>
+            </value>
+            <value>
+                <fullName>Seminar</fullName>
+                <default>false</default>
+                <label>Seminar</label>
+            </value>
+            <value>
+                <fullName>Trade shows</fullName>
+                <default>false</default>
+                <label>Trade shows</label>
+            </value>
+            <value>
+                <fullName>Webinars</fullName>
+                <default>false</default>
+                <label>Webinars</label>
+            </value>
+            <value>
+                <fullName>Workshop and Masterclass</fullName>
+                <default>false</default>
+                <label>Workshop and Masterclass</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

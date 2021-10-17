@@ -1,0 +1,281 @@
+<template>
+    <article class="slds-card">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+            <div class="slds-media__figure">
+                <lightning-icon icon-name="standard:announcement" alternative-text="Event" title="Event"></lightning-icon>
+            </div>
+            <div class="slds-media__body">
+                <h2 class="slds-card__header-title">
+                <a href="#" class="slds-card__header-link slds-truncate" title="Event">
+                    <span>Event</span>
+                </a>
+                </h2>
+            </div>
+            <div class="slds-no-flex">
+               <lightning-button label="Schedule Event" onclick={handleScheduleEvent} data-label="schedule-event"></lightning-button>
+            </div>
+            </header>
+        </div>
+        <div class="slds-card__body"></div>
+    </article>
+    <div class="slds-p-top_x-small">
+        <lightning-card >
+            <div class="slds-m-around_small">
+                <lightning-record-form
+                    object-api-name="Event__c"
+                    record-id={recordId}
+                    fields={eventFields}>
+                </lightning-record-form>
+            </div>
+            
+            <template if:true={schedulesList}>
+                <div class="slds-m-around_small">
+                    <lightning-accordion class="example-accordion" active-section-name="list-of-schedules" allow-multiple-sections-open>
+                        <lightning-accordion-section name="list-of-schedules" label="Schedules">
+                            
+                            <div class="slds-p-bottom_medium">
+                                <lightning-button-group class="slds-float_right">
+                                    <lightning-button label="Complete Schedules" disabled={hasSelection} onclick={handleBulkSchedUpdate} data-label="complete"></lightning-button>
+                                    <lightning-button variant="destructive-text" label="Cancel Schedules" disabled={hasSelection} onclick={handleBulkSchedUpdate} data-label="cancel"></lightning-button>
+                                </lightning-button-group>
+                            </div>
+                            <table aria-multiselectable="true" class="slds-table slds-table_cell-buffer slds-table_bordered" role="grid">
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th class="slds-text-align_right" scope="col" style="width:3.25rem">
+                                        <span id="column-group-header" class="slds-assistive-text">Choose a row</span>
+                                        <div class="slds-th__action slds-th__action_form">
+                                            <div class="slds-checkbox">
+                                                <lightning-input type="checkbox" onchange={handleSelectAll} value={selectAll} checked={selectAll}></lightning-input>
+                                            </div>
+                                        </div>
+                                        </th>
+                                        <th aria-label="Schedule Name" aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Schedule Name">Schedule Name</span>
+                                            </div>
+                                        </th>
+                                        <th aria-label="Start" aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                            <span class="slds-truncate" title="Start">Start</span>
+                                            </div>
+                                        </th>
+                                        <th aria-label="End" aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                            <span class="slds-truncate" title="End">End</span>
+                                            </div>
+                                        </th>
+                                        <th aria-label="Schedule Status" aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col">
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                            <span class="slds-truncate" title="Schedule Status">Schedule Status</span>
+                                            </div>
+                                        </th>
+                                        <th class="" scope="col" style="width:3.25rem">
+                                            <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                <span class="slds-truncate" title="Actions">Actions</span>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={schedulesList.data} for:item="sched">
+                                        <tr aria-selected="false" class="slds-hint-parent" key={sched.schedId}>
+                                            <td class="slds-text-align_right" role="gridcell">
+                                            <div class="slds-checkbox">
+                                                <lightning-input type="checkbox" value={sched.schedIsSelected} disabled={sched.schedIsComplete} checked={isSelected} data-id={sched.schedId}></lightning-input>
+                                            </div>
+                                            </td>
+                                            <th scope="row">
+                                                <div class="slds-truncate" title={sched.schedName}>{sched.schedName}</div>
+                                            </th>
+                                            <td role="gridcell">
+                                                <div class="slds-truncate" title={sched.schedStart}>{sched.schedStart}</div>
+                                            </td>
+                                            <td role="gridcell">
+                                                <div class="slds-truncate" title={sched.schedEnd}>{sched.schedEnd}</div>
+                                            </td>
+                                            <td role="gridcell">
+                                                <div class="slds-truncate" title={sched.schedStatus}>{sched.schedStatus}</div>
+                                            </td>
+                                            <td role="gridcell">
+                                                <div class="slds-truncate">
+                                                    <lightning-button-group>
+                                                        <lightning-button label="View" onclick={handleViewEvent} data-row={sched.schedId}></lightning-button>
+                                                        <lightning-button label="Complete" disabled={sched.schedIsComplete} data-row={sched.schedId} data-label="complete" onclick={handleSingleEventUpdate}></lightning-button>
+                                                        <lightning-button variant="destructive-text" label="Cancel" disabled={sched.schedIsCancelled} data-row={sched.schedId} data-label="cancel" onclick={handleSingleEventUpdate}></lightning-button>
+                                                    </lightning-button-group>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </lightning-accordion-section>
+                    </lightning-accordion>
+                </div>
+            </template>
+            <template if:true={openScheduleEventModal}>
+                <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large" aria-labelledby="schedule-event-modal" aria-modal="true" aria-describedby="schedule-event-modal-content">
+                    <div class="slds-modal__container">
+                        <header class="slds-modal__header">
+                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={handleCloseModal}>
+                                <lightning-icon icon-name="utility:close" alternative-text="Close Modal" title="Close Modal"></lightning-icon>
+                            </button>
+                            <h2 id="schedule-event-modal" class="slds-modal__title slds-hyphenate">Schedule Event</h2>
+                        </header>
+                        <div class="slds-modal__content slds-p-around_medium" id="schedule-event-modal-content">
+                            <div if:true={schedulePage}>
+                                <lightning-layout>
+                                    <lightning-layout-item padding="around-small">
+                                        <div class="header-column">
+                                            <lightning-combobox
+                                                name="area"
+                                                label="Area"
+                                                value={selectedArea}
+                                                placeholder="Select area"
+                                                options={areaOptions}
+                                                onchange={handleSelectArea}
+                                                required>
+                                            </lightning-combobox>
+                                        </div>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item padding="around-small">
+                                        <div class="header-column">
+                                            <lightning-input type="date" name="start-date" label="Start Date" value={startDate} onchange={handleStartDate} required></lightning-input>
+                                        </div>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item padding="around-small">
+                                        <div class="header-column">
+                                            <lightning-input type="time" name="start-time" label="Start Time" value={startTime} onchange={handleStartTime} required></lightning-input>
+                                        </div>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item padding="around-small">
+                                        <div class="header-column">
+                                            <lightning-input type="time" name="end-time" label="End Time" value={endTime} onchange={handleEndTime} required></lightning-input>
+                                        </div>
+                                    </lightning-layout-item>
+                                </lightning-layout>
+                                <lightning-layout>
+                                    <lightning-layout-item padding="around-small">
+                                        <div class="header-column">
+                                            <lightning-input type="checkbox" label="Recurring Event" name="recurring-event" onchange={handleRecurringEvent} checked={isRecurring} value={isRecurring}></lightning-input>
+                                        </div>
+                                    </lightning-layout-item>
+                                </lightning-layout>
+                                <lightning-layout if:true={isRecurring}>
+                                    <lightning-layout-item padding="around-small">
+                                        <div class="header-column">
+                                            <lightning-checkbox-group name="Checkbox Group"
+                                                label="Repeat on:"
+                                                options={daysOfTheWeek}
+                                                value={selectedDays}
+                                                onchange={handleDaysSelection}>
+                                            </lightning-checkbox-group>
+                                        </div>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item padding="around-small" if:true={hasSelectedDays} >
+                                        <div class="header-column">
+                                            <lightning-input type="date" name="end-date" label="End Date" value={endDate} onchange={handleEndDate} required></lightning-input>
+                                        </div>
+                                    </lightning-layout-item>
+                                </lightning-layout>
+                            </div>
+                            <div if:true={attendeePage}>
+                                <lightning-input
+                                    name="enter-attendee"
+                                    label="Search Attendee"
+                                    type="search"
+                                    onchange={handleAttendeeSearch}
+                                    value={attendeeSearchValue}>
+                                </lightning-input>
+                                <!-- DROPDOWN -->
+                                <div id="listbox-id-4" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" role="listbox" if:true={hasAttendeeSearchList}>
+                                    <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                        <template for:each={attendeeSearchList} for:item="contact">
+                                            <li role="presentation" key={contact.Id}  class="slds-listbox__item" onclick={handleSelectContact}>
+                                                <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" role="option" data-id={contact.Id} data-name={contact.Name}>
+                                                    <span class="slds-media__figure slds-listbox__option-icon"></span>
+                                                    <span class="slds-media__body">
+                                                        <span class="slds-truncate" title={contact.Name}>{contact.Name}</span>
+                                                    </span>
+                                                </div>
+                                            </li>   
+                                        </template>
+                                    </ul>
+                                </div>
+                                <div id="listbox-id-5" class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid" role="listbox" if:true={attendeeSearchNoResult}>
+                                    <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                                        <li role="presentation" class="slds-listbox__item">
+                                            <div class="slds-media slds-listbox__option slds-listbox__option_plain slds-media_small" role="option" data-id="" data-name="">
+                                                <span class="slds-media__figure slds-listbox__option-icon"></span>
+                                                <span class="slds-media__body">
+                                                    <span class="slds-truncate" title="">No results found</span>
+                                                </span>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <template if:true={hasSelectedContactsList}>
+                                    <table aria-multiselectable="true" class="slds-table slds-table_cell-buffer slds-table_bordered" role="grid">
+                                        <thead>
+                                            <tr class="slds-line-height_reset">
+                                                <th aria-label="Attendee Name" aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col">
+                                                    <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                        <span class="slds-truncate" title="Attendee Name">Attendee Name</span>
+                                                    </div>
+                                                </th>
+                                                <th aria-label="Phone" aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col">
+                                                    <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                    <span class="slds-truncate" title="Phone">Phone</span>
+                                                    </div>
+                                                </th>
+                                                <th aria-label="Email" aria-sort="none" class="slds-is-resizable slds-is-sortable" scope="col">
+                                                    <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                    <span class="slds-truncate" title="Email">Email</span>
+                                                    </div>
+                                                </th>
+                                                <th class="" scope="col" style="width:3.25rem">
+                                                    <div class="slds-grid slds-grid_vertical-align-center slds-has-flexi-truncate">
+                                                        <span class="slds-truncate" title="Actions">Actions</span>
+                                                    </div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <template for:each={selectedContactsList} for:item="contact">
+                                                <tr aria-selected="false" class="slds-hint-parent" key={contact.Id}>
+                                                    <th scope="row">
+                                                        <div class="slds-truncate" title={contact.Name}>{contact.Name}</div>
+                                                    </th>
+                                                    <td role="gridcell">
+                                                        <div class="slds-truncate" title={contact.Phone}>{contact.Phone}</div>
+                                                    </td>
+                                                    <td role="gridcell">
+                                                        <div class="slds-truncate" title={contact.Email}>{contact.Email}</div>
+                                                    </td>
+                                                    <td role="gridcell">
+                                                        <div class="slds-truncate">
+                                                            <lightning-button-icon variant="container" icon-name="action:delete" size="small" data-row={contact.Id} alternative-text="Remove Contact" class="slds-m-left_xx-small" onclick={handleRemoveContact} ></lightning-button-icon>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </template>
+                            </div>
+                        </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Cancel" title="Cancel" onclick={handleCloseModal} class="slds-m-left_x-small"></lightning-button>
+                        <lightning-button label="Next" title="Next" variant="brand" onclick={handleNext} class="slds-m-left_x-small" if:true={schedulePage}></lightning-button>
+                        <lightning-button label="Back" title="Back" variant="brand" onclick={handleBack} class="slds-m-left_x-small" if:true={attendeePage}></lightning-button>
+                        <lightning-button label="Save" title="Save" variant="brand" onclick={handleSaveSchedule} class="slds-m-left_x-small" if:true={attendeePage}></lightning-button>
+                    </footer>
+                    </div>
+                </section>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </template>
+        </lightning-card>
+    </div>
+</template>
